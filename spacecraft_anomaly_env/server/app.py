@@ -40,7 +40,7 @@ def create_app(task_id: Optional[str] = None) -> FastAPI:
     env = SpacecraftAnomalyEnvironment(task_id=_task_id)
 
     app = FastAPI(
-        title="Spacecraft Anomaly Detection — OpenEnv",
+        title="Spacecraft Anomaly Detection OpenEnv",
         description=(
             "Real-world spacecraft telemetry anomaly detection environment "
             "for RL agent training. Implements OpenEnv RFC-002 spec."
