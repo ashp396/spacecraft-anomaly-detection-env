@@ -1,0 +1,120 @@
+spec_version: 1
+
+name: spacecraft_anomaly_env
+version: "1.0.0"
+description: >
+  Real-world spacecraft telemetry anomaly detection environment for RL agent training.
+  Simulates 5 spacecraft subsystems (power, thermal, attitude, comms, propulsion)
+  with 16 sensors. Agents must identify anomalies, classify severity, and recommend
+  recovery procedures. Three task difficulties: single-sensor (easy), cascade
+  root-cause (medium), and multi-subsystem with sensor dropout (hard).
+
+author: spacecraft-anomaly-openenv
+tags:
+  - openenv
+  - spacecraft
+  - anomaly-detection
+  - telemetry
+  - rl
+  - real-world
+
+type: http
+
+runtime:
+  type: docker
+  python_version: "3.11"
+
+app:
+  module: spacecraft_anomaly_env.server.app
+  attribute: app
+
+port: 7860
+
+tasks:
+  - id: task_easy
+    name: Single-sensor anomaly identification
+    difficulty: easy
+    max_steps: 10
+    description: >
+      Identify the single anomalous sensor from clean telemetry.
+      No cascade effects or sensor dropout.
+
+  - id: task_medium
+    name: Root-cause analysis with cascade effects
+    difficulty: medium
+    max_steps: 15
+    description: >
+      Identify the root-cause sensor, classify severity, and recommend
+      recovery action. Secondary sensors show cascade effects.
+
+  - id: task_hard
+    name: Multi-subsystem cascade with dropout and recovery sequencing
+    difficulty: hard
+    max_steps: 20
+    description: >
+      Critical fault cascading across subsystems. 18% sensor dropout.
+      Requires: root-cause identification, severity classification,
+      correct recovery recommendation, and ground support escalation.
+
+action_space:
+  type: structured_json
+  schema:
+    action_type:
+      type: enum
+      values: [query_subsystem, flag_anomaly, clear_flag, recommend, request_support, no_op]
+    subsystem:
+      type: string
+      optional: true
+      values: [power, thermal, attitude, comms, propulsion]
+    sensor:
+      type: string
+      optional: true
+    severity:
+      type: enum
+      optional: true
+      values: [info, warning, critical]
+    recommendation:
+      type: enum
+      optional: true
+      values: [no_action, safe_mode, reboot, reduce_power, attitude_hold, thermal_vent, isolate_comms, shutdown_thruster]
+    confidence:
+      type: float
+      range: [0.0, 1.0]
+
+observation_space:
+  telemetry:
+    type: dict
+    description: 16 sensor readings (float or null for dropout)
+  step_count:
+    type: int
+  steps_remaining:
+    type: int
+  active_flags:
+    type: list
+    description: Anomaly flags raised by agent this episode
+  reward:
+    type: object
+    components: [detection, localization, severity, action, speed_bonus, fp_penalty, total]
+  done:
+    type: bool
+
+reward_range: [0.0, 1.0]
+reward_type: shaped
+reward_description: >
+  Dense shaped reward computed every step. Components:
+  detection (found anomalous subsystem), localization (correct primary sensor),
+  severity (correct severity level), action (correct recovery recommendation),
+  speed_bonus (early detection reward), fp_penalty (false positive penalty).
+
+baseline_scores:
+  task_easy: 0.72
+  task_medium: 0.51
+  task_hard: 0.28
+
+supports_concurrent_sessions: false
+max_concurrent_envs: 1
+
+huggingface:
+  sdk: docker
+  app_port: 7860
+  suggested_hardware: cpu-basic
