@@ -263,13 +263,15 @@ def _format_flags(flags: List[Dict]) -> str:
 
 def main():
     parser = argparse.ArgumentParser(description="Spacecraft Anomaly Detection : Baseline Inference")
-    parser.add_argument("--task",    default=None, help="Single task ID to run (default: all 3)")
-    parser.add_argument("--env-url", default=ENV_URL, help="Environment server URL")
-    parser.add_argument("--episodes", type=int, default=EPISODES_PER_TASK, help="Episodes per task")
-    parser.add_argument("--seed",    type=int, default=42, help="Random seed")
+    parser.add_argument("--task", default=None, required=False)
+    parser.add_argument("--env-url", default=ENV_URL, required=False)
+    parser.add_argument("--episodes", type=int, default=EPISODES_PER_TASK, required=False)
+    parser.add_argument("--seed", type=int, default=42, required=False)
     args = parser.parse_args()
-
-    tasks_to_run = [args.task] if args.task else TASKS
+    if args.task and args.task in TASKS:
+      tasks_to_run = [args.task]
+    else:
+      tasks_to_run = TASKS
 
     # Validate env is reachable
     try:
