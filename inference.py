@@ -10,9 +10,9 @@ Environment variables required:
 
 Usage:
   python inference.py
-  python inference.py --task task_easy
-  python inference.py --env-url https://huggingface.co/spaces/ashp396/spacecraft-anomaly-detection
-  python inference.py --seed 42
+  python inference.py task task_easy
+  python inference.py env-url https://huggingface.co/spaces/ashp396/spacecraft-anomaly-detection
+  python inference.py seed 42
 
 Log format (mandatory — judges parse these lines):
   [START] {"task_id": ..., "episode": ...}
@@ -262,7 +262,7 @@ def _format_flags(flags: List[Dict]) -> str:
 # Main
 
 def main():
-    parser = argparse.ArgumentParser(description="Spacecraft Anomaly Detection — Baseline Inference")
+    parser = argparse.ArgumentParser(description="Spacecraft Anomaly Detection : Baseline Inference")
     parser.add_argument("--task",    default=None, help="Single task ID to run (default: all 3)")
     parser.add_argument("--env-url", default=ENV_URL, help="Environment server URL")
     parser.add_argument("--episodes", type=int, default=EPISODES_PER_TASK, help="Episodes per task")
@@ -282,7 +282,7 @@ def main():
 
     # Validate API credentials
     if not HF_TOKEN:
-        print(json.dumps({"type": "WARNING", "message": "HF_TOKEN not set — API calls may fail"}), flush=True)
+        print(json.dumps({"type": "WARNING", "message": "HF_TOKEN not set, API calls may fail"}), flush=True)
 
     summary: Dict[str, float] = {}
 
@@ -308,7 +308,8 @@ def main():
                 scores.append(0.0)
 
         avg = round(sum(scores) / len(scores), 4) if scores else 0.0
-        summary[task_id] = avg
+        safe_avg = max(0.0001, min(0.9999, avg))
+        summary[task_id] = safe_avg
 
     # Final summary
     print(json.dumps({
@@ -316,7 +317,9 @@ def main():
         "model": MODEL_NAME,
         "episodes_per_task": args.episodes,
         "scores": summary,
-        "mean_score": round(sum(summary.values()) / len(summary), 4) if summary else 0.0,
+        mean = sum(summary.values()) / len(summary) if summary else 0.0
+        safe_mean = max(0.0001, min(0.9999, mean))
+        "mean_score": round(safe_mean, 4)
     }), flush=True)
 
 
