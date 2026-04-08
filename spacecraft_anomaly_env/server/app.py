@@ -77,7 +77,7 @@ def create_app(task_id: Optional[str] = None) -> FastAPI:
 
     # reset 
 
-    @app.post("/reset", response_model=SpacecraftObservation)
+    @app.get("/reset", response_model=SpacecraftObservation)
     def reset(req: ResetRequest = ResetRequest()):
         nonlocal env
         tid = req.task_id or _task_id
