@@ -7,7 +7,6 @@ name = "spacecraft-anomaly-env"
 version = "1.0.0"
 description = "Real-world spacecraft telemetry anomaly detection environment for RL agent training."
 readme = "README.md"
-license = {text = "MIT"}
 requires-python = ">=3.9"
 authors = [
     {name = "Spacecraft Anomaly OpenEnv Team"},
@@ -37,7 +36,10 @@ dependencies = [
     "numpy>=1.24.0",
     "requests>=2.31.0",
     "openai>=1.0.0",
+    "openenv-core>=0.2.0",
 ]
+[project.scripts]
+server = "spacecraft_anomaly_env.server.run:main"
 
 [project.optional-dependencies]
 test = [
