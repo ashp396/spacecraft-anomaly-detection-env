@@ -10,9 +10,9 @@ Backed by statistical parameters from published mission data (NASA SMAP anomaly 
 Spacecraft anomaly detection is a real operational task performed 24 hours a day at NASA, ESA, ISRO, and commercial operators. Human operators monitor hundreds of sensor channels simultaneously, reason about cascading faults under time pressure, and issue recovery commands. This environment faithfully models that workflow:
 
 - **Physically grounded** sensor simulation (Li-ion battery model, Newton cooling, reaction wheel dynamics, Friis link budget, ideal gas tank pressure)
-- **Cascade anomaly** physics: a primary fault propagates to secondary sensors with time delay and reduced magnitude — just like real hardware failures
+- **Cascade anomaly** physics: a primary fault propagates to secondary sensors with time delay and reduced magnitude, just like real hardware failures
 - **Sensor dropout** on the hard task (18% of sensors return `null`) simulating communication gaps or sensor failures
-- **Deterministic graders** — no LLM-as-judge, no ambiguity
+- **Deterministic graders** no LLM-as-judge, no ambiguity
 
 
 ## Architecture
