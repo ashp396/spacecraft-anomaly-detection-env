@@ -160,14 +160,11 @@ def run_episode(
     env_url: str,
     seed: Optional[int] = None,
 ) -> float:
-    """Run one episode. Returns final reward score (0.0–1.0)."""
 
     obs = env_reset(env_url, task_id, seed=seed)
     episode_id = obs.get("info", {}).get("episode_id", f"ep-{episode_idx}")
 
-    # [START] log 
-    print(json.dumps({
-        "type": "[START]",
+    print("[START] " + json.dumps({
         "task_id": task_id,
         "episode": episode_idx,
         "episode_id": episode_id,
@@ -178,9 +175,10 @@ def run_episode(
     final_score = 0.0
 
     for step_idx in range(MAX_STEPS_PER_TASK):
-        # Build user message from observation
+
         tel_str = _format_telemetry(obs.get("telemetry", {}))
         flags_str = _format_flags(obs.get("active_flags", []))
+
         user_msg = (
             f"Step {obs.get('step_count', step_idx)} | "
             f"Steps remaining: {obs.get('steps_remaining', 0)}\n\n"
@@ -196,16 +194,13 @@ def run_episode(
 
         action = parse_action(raw_response)
 
-        # Call environment
         obs = env_step(env_url, action)
         reward_obj = obs.get("reward", {})
         step_reward = reward_obj.get("total", 0.0)
         done = obs.get("done", False)
         final_score = step_reward
 
-        #  [STEP] log 
-        print(json.dumps({
-            "type": "[STEP]",
+        print("[STEP] " + json.dumps({
             "task_id": task_id,
             "episode": episode_idx,
             "step": step_idx + 1,
@@ -227,9 +222,7 @@ def run_episode(
         if done:
             break
 
-    # [END] log 
-    print(json.dumps({
-        "type": "[END]",
+    print("[END] " + json.dumps({
         "task_id": task_id,
         "episode": episode_idx,
         "final_score": round(final_score, 4),
