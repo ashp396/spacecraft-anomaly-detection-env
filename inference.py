@@ -16,9 +16,9 @@ MODEL_NAME:   str = os.environ.get("MODEL_NAME",   "meta-llama/Llama-3.3-70B-Ins
 HF_TOKEN:     str = os.environ.get("HF_TOKEN",     "")
 ENV_URL:      str = os.environ.get("ENV_URL",      "http://localhost:7860")
 
-MAX_STEPS_PER_TASK = 20   # hard cap regardless of task limit
-EPISODES_PER_TASK  = 3    # average over 3 episodes per task for stable score
-SLEEP_BETWEEN      = 0.5  # seconds between API calls (rate limiting)
+MAX_STEPS_PER_TASK = 20  
+EPISODES_PER_TASK  = 3    
+SLEEP_BETWEEN      = 0.5 
 
 TASKS = ["task_easy", "task_medium", "task_hard"]
 
@@ -102,7 +102,6 @@ def parse_action(text: str) -> Dict[str, Any]:
     try:
         return json.loads(cleaned)
     except json.JSONDecodeError:
-        # Try to extract JSON object from prose
         import re
         match = re.search(r'\{[^{}]+\}', text, re.DOTALL)
         if match:
@@ -110,7 +109,6 @@ def parse_action(text: str) -> Dict[str, Any]:
                 return json.loads(match.group())
             except Exception:
                 pass
-    # Hard fallback
     return {"action_type": "no_op", "rationale": "parse_error"}
 
 # Environment API helpers
