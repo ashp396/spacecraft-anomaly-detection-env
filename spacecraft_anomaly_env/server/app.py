@@ -28,6 +28,10 @@ from ..models import SpacecraftAction, SpacecraftObservation, SpacecraftState
 from .spacecraft_environment import SpacecraftAnomalyEnvironment
 from .tasks import TASKS
 
+class ResetRequest(BaseModel):
+    task_id: Optional[str] = None
+    seed: Optional[int] = None
+  
 # App factory (matches OpenEnv create_app pattern
 
 def create_app(task_id: Optional[str] = None) -> FastAPI:
@@ -72,10 +76,6 @@ def create_app(task_id: Optional[str] = None) -> FastAPI:
         }
 
     # reset 
-
-    class ResetRequest(BaseModel):
-        task_id: Optional[str] = None
-        seed: Optional[int] = None
 
     @app.post("/reset", response_model=SpacecraftObservation)
     def reset(req: ResetRequest = ResetRequest()):
