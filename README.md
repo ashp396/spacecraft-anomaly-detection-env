@@ -1,12 +1,3 @@
----
-title: Spacecraft Anomaly Detection
-emoji: 🚀
-colorFrom: blue
-colorTo: purple
-sdk: docker
-app_port: 7860
-pinned: false
----
 # Spacecraft Anomaly Detection OpenEnv
 
 An OpenEnv environment that simulates real-world spacecraft mission operations. AI agents analyse streaming telemetry from 5 spacecraft subsystems, detect faults, classify severity, and recommend recovery procedures, exactly as a human flight operations engineer does.
