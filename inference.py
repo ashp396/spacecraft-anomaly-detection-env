@@ -10,9 +10,9 @@ Environment variables required:
 
 Usage:
   python inference.py
-  python inference.py task task_easy
-  python inference.py env-url https://huggingface.co/spaces/ashp396/spacecraft-anomaly-detection
-  python inference.py seed 42
+  python inference.py --task task_easy
+  python inference.py --env-url https://huggingface.co/spaces/ashp396/spacecraft-anomaly-detection
+  python inference.py --seed 42
 
 Log format (mandatory — judges parse these lines):
   [START] {"task_id": ..., "episode": ...}
