@@ -11,8 +11,8 @@ from openai import OpenAI
 
 # Configuration
 
-API_BASE_URL: str = os.environ.get("API_BASE_URL", "https://router.huggingface.co")
-MODEL_NAME:   str = os.environ.get("MODEL_NAME",   "microsoft/WizardLM-2-8x22B")
+API_BASE_URL: str = os.environ.get("API_BASE_URL", "https://api-inference.huggingface.co/v1")
+MODEL_NAME:   str = os.environ.get("MODEL_NAME",   "mistralai/Mistral-7B-Instruct-v0.2")
 HF_TOKEN:     str = os.environ.get("HF_TOKEN",     "")
 ENV_URL:      str = os.environ.get("ENV_URL",      "http://localhost:7860")
 
