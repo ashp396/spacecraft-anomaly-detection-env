@@ -1,29 +1,4 @@
-#!/usr/bin/env python3
-"""
-inference.py — Baseline Agent for Spacecraft Anomaly Detection OpenEnv
-=======================================================================
-Runs an LLM agent (via OpenAI-compatible client) against all three tasks
-and reports reproducible scores using the mandatory log format.
-
-Environment variables required:
-  API_BASE_URL   — LLM API endpoint  (e.g. https://api-inference.huggingface.co/v1)
-  MODEL_NAME     — Model identifier  (e.g. meta-llama/Llama-3.3-70B-Instruct)
-  HF_TOKEN       — Hugging Face token / API key
-
-Usage:
-  python inference.py
-  python inference.py --task task_easy
-  python inference.py --env-url http://localhost:7860
-  python inference.py --seed 42
-
-Log format (mandatory — judges parse these lines):
-  [START] {"task_id": ..., "episode": ...}
-  [STEP]  {"task_id": ..., "episode": ..., "step": ..., "reward": ..., "done": ..., "action_type": ...}
-  [END]   {"task_id": ..., "episode": ..., "final_score": ..., "steps_taken": ...}
-"""
-
 from __future__ import annotations
-
 import argparse
 import json
 import os
@@ -34,10 +9,7 @@ from typing import Any, Dict, List, Optional
 import requests
 from openai import OpenAI
 
-
-# ---------------------------------------------------------------------------
 # Configuration
-# ---------------------------------------------------------------------------
 
 API_BASE_URL: str = os.environ.get("API_BASE_URL", "https://api-inference.huggingface.co/v1")
 MODEL_NAME:   str = os.environ.get("MODEL_NAME",   "meta-llama/Llama-3.3-70B-Instruct")
@@ -50,16 +22,10 @@ SLEEP_BETWEEN      = 0.5  # seconds between API calls (rate limiting)
 
 TASKS = ["task_easy", "task_medium", "task_hard"]
 
-# ---------------------------------------------------------------------------
 # OpenAI client
-# ---------------------------------------------------------------------------
-
 client = OpenAI(api_key=HF_TOKEN, base_url=API_BASE_URL)
 
-
-# ---------------------------------------------------------------------------
 # System prompt
-# ---------------------------------------------------------------------------
 
 SYSTEM_PROMPT = """You are an expert spacecraft mission operations engineer.
 You monitor real-time telemetry from a spacecraft with 5 subsystems:
@@ -102,10 +68,7 @@ Sensor value = null means DROPOUT (sensor offline, not anomalous by itself).
 Look for CASCADE patterns: a fault in one subsystem often affects others.
 """
 
-
-# ---------------------------------------------------------------------------
 # LLM call
-# ---------------------------------------------------------------------------
 
 def call_llm(messages: List[Dict[str, str]], retry: int = 3) -> str:
     """Call the LLM with retry logic. Returns raw text."""
@@ -150,10 +113,7 @@ def parse_action(text: str) -> Dict[str, Any]:
     # Hard fallback
     return {"action_type": "no_op", "rationale": "parse_error"}
 
-
-# ---------------------------------------------------------------------------
 # Environment API helpers
-# ---------------------------------------------------------------------------
 
 def env_reset(env_url: str, task_id: str, seed: Optional[int] = None) -> Dict:
     payload = {"task_id": task_id}
@@ -170,9 +130,7 @@ def env_step(env_url: str, action: Dict) -> Dict:
     return r.json()
 
 
-# ---------------------------------------------------------------------------
 # Single episode runner
-# ---------------------------------------------------------------------------
 
 def run_episode(
     task_id: str,
@@ -185,7 +143,7 @@ def run_episode(
     obs = env_reset(env_url, task_id, seed=seed)
     episode_id = obs.get("info", {}).get("episode_id", f"ep-{episode_idx}")
 
-    # ── [START] log ───────────────────────────────────────────────────────
+    # [START] log 
     print(json.dumps({
         "type": "[START]",
         "task_id": task_id,
@@ -223,7 +181,7 @@ def run_episode(
         done = obs.get("done", False)
         final_score = step_reward
 
-        # ── [STEP] log ────────────────────────────────────────────────────
+        #  [STEP] log 
         print(json.dumps({
             "type": "[STEP]",
             "task_id": task_id,
@@ -247,7 +205,7 @@ def run_episode(
         if done:
             break
 
-    # ── [END] log ─────────────────────────────────────────────────────────
+    # [END] log 
     print(json.dumps({
         "type": "[END]",
         "task_id": task_id,
@@ -258,10 +216,7 @@ def run_episode(
 
     return final_score
 
-
-# ---------------------------------------------------------------------------
 # Formatting helpers
-# ---------------------------------------------------------------------------
 
 def _format_telemetry(telemetry: Dict) -> str:
     lines = []
@@ -291,9 +246,7 @@ def _format_flags(flags: List[Dict]) -> str:
     )
 
 
-# ---------------------------------------------------------------------------
 # Main
-# ---------------------------------------------------------------------------
 
 def main():
     parser = argparse.ArgumentParser(description="Spacecraft Anomaly Detection — Baseline Inference")
