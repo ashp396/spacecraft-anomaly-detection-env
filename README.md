@@ -295,7 +295,3 @@ The Space will be available at `https://your-username-spacecraft-anomaly-env.hf.
 | `HF_TOKEN` | — | HuggingFace / API key |
 | `ENV_URL` | `http://localhost:7860` | Env server URL for inference.py |
 
-
-## License
-
-MIT
