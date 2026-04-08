@@ -310,15 +310,15 @@ def main():
         avg = round(sum(scores) / len(scores), 4) if scores else 0.0
         safe_avg = max(0.0001, min(0.9999, avg))
         summary[task_id] = safe_avg
+        mean = sum(summary.values()) / len(summary) if summary else 0.0
+        safe_mean = max(0.0001, min(0.9999, mean))
 
     # Final summary
     print(json.dumps({
         "type": "SUMMARY",
         "model": MODEL_NAME,
         "episodes_per_task": args.episodes,
-        "scores": summary,
-        mean = sum(summary.values()) / len(summary) if summary else 0.0
-        safe_mean = max(0.0001, min(0.9999, mean))
+        "scores": summary
         "mean_score": round(safe_mean, 4)
     }), flush=True)
 
