@@ -1,3 +1,27 @@
+"""
+inference.py — Baseline Agent for Spacecraft Anomaly Detection OpenEnv
+=======================================================================
+Runs an LLM agent (via OpenAI-compatible client) against all three tasks
+and reports reproducible scores using the mandatory log format.
+
+Environment variables required:
+  API_BASE_URL   — LLM API endpoint  (e.g. https://api-inference.huggingface.co/v1)
+  MODEL_NAME     — Model identifier  (e.g. meta-llama/Llama-3.3-70B-Instruct)
+  HF_TOKEN       — Hugging Face token / API key
+
+Usage:
+  python inference.py
+  python inference.py --task task_easy
+  python inference.py --env-url https://huggingface.co/spaces/ashp396/spacecraft-anomaly-detection
+  python inference.py --seed 42
+
+Log format (mandatory — judges parse these lines):
+  [START] {"task_id": ..., "episode": ...}
+  [STEP]  {"task_id": ..., "episode": ..., "step": ..., "reward": ..., "done": ..., "action_type": ...}
+  [END]   {"task_id": ..., "episode": ..., "final_score": ..., "steps_taken": ...}
+"""
+
+>>>>>>> 83671c5 (fix hackathon requirements)
 from __future__ import annotations
 import argparse
 import json

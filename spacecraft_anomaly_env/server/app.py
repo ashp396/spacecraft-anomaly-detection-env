@@ -34,6 +34,19 @@ class ResetRequest(BaseModel):
   
 # App factory (matches OpenEnv create_app pattern
 
+# ---------------------------------------------------------------------------
+# Request models
+# ---------------------------------------------------------------------------
+
+class ResetRequest(BaseModel):
+    task_id: Optional[str] = None
+    seed: Optional[int] = None
+
+
+# ---------------------------------------------------------------------------
+# App factory (matches OpenEnv create_app pattern)
+# ---------------------------------------------------------------------------
+
 def create_app(task_id: Optional[str] = None) -> FastAPI:
     _task_id = task_id or os.getenv("TASK_ID", "task_easy")
 
