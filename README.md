@@ -276,7 +276,7 @@ openenv push --repo-id your-username/spacecraft-anomaly-env
 # 3. Set env var: TASK_ID=task_easy
 ```
 
-The Space will be available at 'https://huggingface.co/spaces/ashp396/spacecraft-anomaly-detection'
+The Space will be available at https://huggingface.co/spaces/ashp396/spacecraft-anomaly-detection
 
 
 ## Anomaly Catalogue
