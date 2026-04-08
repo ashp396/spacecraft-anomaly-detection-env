@@ -7,6 +7,10 @@ name = "spacecraft-anomaly-env"
 version = "1.0.0"
 description = "Real-world spacecraft telemetry anomaly detection environment for RL agent training."
 readme = "README.md"
+<<<<<<< HEAD
+=======
+license = {text = "MIT"}
+>>>>>>> 6ebde07 (add uv lock and project config)
 requires-python = ">=3.10"
 authors = [
     {name = "Spacecraft Anomaly OpenEnv Team"},
@@ -51,6 +55,9 @@ dev = [
     "isort",
     "flake8",
 ]
+
+[project.scripts]
+server = "spacecraft_anomaly_env.server.run:main"
 
 [project.urls]
 Homepage = "https://github.com/example/spacecraft-anomaly-env"
