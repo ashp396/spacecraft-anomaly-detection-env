@@ -1,6 +1,5 @@
 """
 inference.py — Baseline Agent for Spacecraft Anomaly Detection OpenEnv
-=======================================================================
 Runs an LLM agent (via OpenAI-compatible client) against all three tasks
 and reports reproducible scores using the mandatory log format.
 
@@ -20,8 +19,6 @@ Log format (mandatory — judges parse these lines):
   [STEP]  {"task_id": ..., "episode": ..., "step": ..., "reward": ..., "done": ..., "action_type": ...}
   [END]   {"task_id": ..., "episode": ..., "final_score": ..., "steps_taken": ...}
 """
-
->>>>>>> 83671c5 (fix hackathon requirements)
 from __future__ import annotations
 import argparse
 import json
@@ -199,6 +196,7 @@ def run_episode(
         step_reward = reward_obj.get("total", 0.0)
         done = obs.get("done", False)
         final_score = step_reward
+        safe_score = max(0.0001, min(0.9999, final_score))
 
         print("[STEP] " + json.dumps({
             "task_id": task_id,
@@ -225,7 +223,7 @@ def run_episode(
     print("[END] " + json.dumps({
         "task_id": task_id,
         "episode": episode_idx,
-        "final_score": round(final_score, 4),
+        "final_score": round(safe_score, 4),
         "steps_taken": obs.get("step_count", step_idx + 1),
     }), flush=True)
 
