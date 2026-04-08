@@ -1,6 +1,5 @@
 """
 Spacecraft Telemetry Simulator
-==============================
 Mathematically grounded sensor data generator for 5 spacecraft subsystems.
 All statistical parameters derived from published mission data:
   - NASA SMAP anomaly dataset (2015-2018)
@@ -26,9 +25,7 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 
 
-# ---------------------------------------------------------------------------
 # Enumerations
-# ---------------------------------------------------------------------------
 
 class Severity(str, Enum):
     INFO = "info"
@@ -45,9 +42,7 @@ class AnomalyPattern(str, Enum):
     STEP_CHANGE = "step_change"
 
 
-# ---------------------------------------------------------------------------
 # Sensor specifications  (nominal_mean, nominal_std, unit, safe_min, safe_max)
-# ---------------------------------------------------------------------------
 
 SENSOR_SPECS: Dict[str, Dict] = {
     # POWER subsystem
@@ -85,12 +80,10 @@ SUBSYSTEMS: Dict[str, List[str]] = {
     "propulsion": ["tank_pressure", "thruster_temp", "valve_status"],
 }
 
-# ---------------------------------------------------------------------------
 # Anomaly Library  — ground-truth catalogue used by graders
-# ---------------------------------------------------------------------------
 
 ANOMALY_CATALOGUE: List[Dict] = [
-    # ── Easy anomalies (single sensor, obvious pattern) ──────────────────
+    # Easy anomalies (single sensor, obvious pattern) 
     {
         "id": "battery_undervoltage",
         "subsystem": "power",
@@ -144,7 +137,7 @@ ANOMALY_CATALOGUE: List[Dict] = [
         "full_onset_step": 4,
     },
 
-    # ── Medium anomalies (primary + 1–2 cascade sensors) ──────────────────
+    # Medium anomalies (primary + 1–2 cascade sensors)
     {
         "id": "reaction_wheel_bearing_wear",
         "subsystem": "attitude",
@@ -185,7 +178,7 @@ ANOMALY_CATALOGUE: List[Dict] = [
         "full_onset_step": 18,
     },
 
-    # ── Hard anomalies (multi-subsystem cascade, partial dropout) ─────────
+    #Hard anomalies (multi-subsystem cascade, partial dropout) 
     {
         "id": "power_attitude_cascade",
         "subsystem": "power",
@@ -218,10 +211,7 @@ ANOMALY_CATALOGUE: List[Dict] = [
 # Map id → entry for O(1) lookup
 ANOMALY_BY_ID: Dict[str, Dict] = {a["id"]: a for a in ANOMALY_CATALOGUE}
 
-
-# ---------------------------------------------------------------------------
 # Telemetry Generator
-# ---------------------------------------------------------------------------
 
 @dataclass
 class TelemetryState:
