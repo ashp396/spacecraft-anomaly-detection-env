@@ -1,6 +1,5 @@
 """
 OpenEnv Typed Models
-====================
 Pydantic v2 models for the Spacecraft Anomaly Detection environment.
 
 Follows OpenEnv RFC-002 spec:
@@ -17,9 +16,7 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field, field_validator
 
 
-# ---------------------------------------------------------------------------
 # Action types
-# ---------------------------------------------------------------------------
 
 class ActionType(str, Enum):
     QUERY_SUBSYSTEM   = "query_subsystem"    # get extra detail on a subsystem
@@ -83,9 +80,7 @@ class SpacecraftAction(BaseModel):
         return round(v, 4)
 
 
-# ---------------------------------------------------------------------------
 # Observation (includes reward per RFC-002 §4.2)
-# ---------------------------------------------------------------------------
 
 class RewardBreakdown(BaseModel):
     """Granular reward components (all in [0,1] before weighting)."""
@@ -103,7 +98,6 @@ class SpacecraftObservation(BaseModel):
     Observation returned by reset() and step().
 
     Fields
-    ------
     telemetry : Dict[str, Optional[float]]
         Current sensor readings keyed by sensor name.
         None = sensor dropout (hard task only).
@@ -139,9 +133,7 @@ class SpacecraftObservation(BaseModel):
     info: Dict[str, Any] = Field(default_factory=dict)
 
 
-# ---------------------------------------------------------------------------
 # State (server-side episode metadata)
-# ---------------------------------------------------------------------------
 
 class SpacecraftState(BaseModel):
     """
