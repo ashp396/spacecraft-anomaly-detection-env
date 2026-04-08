@@ -1,14 +1,12 @@
 """
 Task Definitions & Graders
-==========================
 Three tasks with deterministic, reproducible graders (0.0–1.0 scoring).
 
-Task 1 — EASY   : Single-sensor anomaly identification
-Task 2 — MEDIUM : Multi-sensor root-cause analysis + severity classification
-Task 3 — HARD   : Multi-subsystem cascade with sensor dropout + recovery sequencing
+Task 1  EASY   : Single-sensor anomaly identification
+Task 2  MEDIUM : Multi-sensor root-cause analysis + severity classification
+Task 3  HARD   : Multi-subsystem cascade with sensor dropout + recovery sequencing
 
 Grading philosophy
-------------------
 All graders are *pure functions* of (state, action) — no LLM-as-judge.
 This guarantees determinism across runs and hardware.
 """
@@ -34,9 +32,7 @@ from ..models import (
 )
 
 
-# ---------------------------------------------------------------------------
 # Correct recovery recommendations per anomaly
-# ---------------------------------------------------------------------------
 
 ANOMALY_RECOMMENDATIONS: Dict[str, RecommendationType] = {
     "battery_undervoltage":       RecommendationType.REDUCE_POWER,
@@ -51,9 +47,7 @@ ANOMALY_RECOMMENDATIONS: Dict[str, RecommendationType] = {
 }
 
 
-# ---------------------------------------------------------------------------
 # Task descriptors
-# ---------------------------------------------------------------------------
 
 TASKS: List[Dict] = [
     {
@@ -126,9 +120,7 @@ TASKS: List[Dict] = [
 TASK_BY_ID: Dict[str, Dict] = {t["id"]: t for t in TASKS}
 
 
-# ---------------------------------------------------------------------------
 # Graders
-# ---------------------------------------------------------------------------
 
 def _detection_score(state: SpacecraftState, flags: List[Dict]) -> float:
     """Did the agent flag *any* sensor belonging to the anomalous subsystem?"""
@@ -241,9 +233,7 @@ def _escalation_score(state: SpacecraftState) -> float:
     return 1.0 if getattr(state, "_escalated", False) else 0.0
 
 
-# ---------------------------------------------------------------------------
 # Per-task composite grader
-# ---------------------------------------------------------------------------
 
 def compute_reward(
     state: SpacecraftState,
@@ -252,7 +242,7 @@ def compute_reward(
     recommendations: List[str],
     action: Optional[SpacecraftAction] = None,
     escalated: bool = False,
-) -> "RewardBreakdown":  # noqa: F821 — imported at call site
+) -> "RewardBreakdown":  
     """
     Compute the shaped reward for the current state.
     Called every step (provides dense signal, not just terminal).
