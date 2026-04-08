@@ -1,6 +1,5 @@
 """
 FastAPI Server
-==============
 Exposes the SpacecraftAnomalyEnvironment over HTTP.
 
 Endpoints (OpenEnv spec §3.1):
@@ -29,10 +28,7 @@ from ..models import SpacecraftAction, SpacecraftObservation, SpacecraftState
 from .spacecraft_environment import SpacecraftAnomalyEnvironment
 from .tasks import TASKS
 
-
-# ---------------------------------------------------------------------------
-# App factory (matches OpenEnv create_app pattern)
-# ---------------------------------------------------------------------------
+# App factory (matches OpenEnv create_app pattern
 
 def create_app(task_id: Optional[str] = None) -> FastAPI:
     _task_id = task_id or os.getenv("TASK_ID", "task_easy")
@@ -48,8 +44,7 @@ def create_app(task_id: Optional[str] = None) -> FastAPI:
         version="1.0.0",
     )
 
-    # ── Health ────────────────────────────────────────────────────────────
-
+    # Health 
     @app.get("/health")
     def health():
         return {"status": "ok", "task_id": _task_id}
@@ -58,7 +53,7 @@ def create_app(task_id: Optional[str] = None) -> FastAPI:
     def root():
         return RedirectResponse(url="/docs")
 
-    # ── Task listing ──────────────────────────────────────────────────────
+    # Task listing 
 
     @app.get("/tasks")
     def list_tasks():
@@ -76,7 +71,7 @@ def create_app(task_id: Optional[str] = None) -> FastAPI:
             ]
         }
 
-    # ── reset ─────────────────────────────────────────────────────────────
+    # reset 
 
     class ResetRequest(BaseModel):
         task_id: Optional[str] = None
@@ -93,7 +88,7 @@ def create_app(task_id: Optional[str] = None) -> FastAPI:
             raise HTTPException(status_code=400, detail=str(e))
         return obs
 
-    # ── step ──────────────────────────────────────────────────────────────
+    # step 
 
     @app.post("/step", response_model=SpacecraftObservation)
     def step(action: SpacecraftAction):
@@ -103,7 +98,7 @@ def create_app(task_id: Optional[str] = None) -> FastAPI:
             raise HTTPException(status_code=400, detail=str(e))
         return obs
 
-    # ── state ─────────────────────────────────────────────────────────────
+    # state
 
     @app.get("/state", response_model=SpacecraftState)
     def state():
@@ -112,9 +107,7 @@ def create_app(task_id: Optional[str] = None) -> FastAPI:
     return app
 
 
-# ---------------------------------------------------------------------------
 # Default app instance (used by uvicorn entrypoint)
-# ---------------------------------------------------------------------------
 
 def _get_app():
     """Lazy factory so tests that stub FastAPI don't crash at import."""
