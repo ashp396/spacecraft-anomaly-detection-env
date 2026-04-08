@@ -102,7 +102,7 @@ Telemetry uses AR-1 autocorrelated noise (ρ=0.8) and a slow random walk for bas
 
 ## Tasks
 
-### Task 1 — Easy: Single-sensor anomaly identification
+### Task 1 : Easy: Single-sensor anomaly identification
 - **Max steps**: 10
 - **Anomaly pool**: battery undervoltage, solar array degradation, gyro bias drift, comms signal dropout
 - **No cascade**, no dropout
@@ -111,7 +111,7 @@ Telemetry uses AR-1 autocorrelated noise (ρ=0.8) and a slow random walk for bas
 
 The agent sees telemetry where a single sensor drifts or spikes from nominal. The objective is to identify and flag that sensor with the correct severity.
 
-### Task 2 — Medium: Root-cause analysis with cascade effects
+### Task 2 : Medium: Root-cause analysis with cascade effects
 - **Max steps**: 15  
 - **Anomaly pool**: reaction wheel bearing wear, CPU thermal runaway, propulsion leak
 - **1–2 cascade sensors** affected by secondary effects
@@ -120,7 +120,7 @@ The agent sees telemetry where a single sensor drifts or spikes from nominal. Th
 
 The primary fault causes secondary sensors to deviate (with a time lag and reduced magnitude). The agent must identify the **root cause** (not just the most deviated sensor) and recommend the correct recovery action.
 
-### Task 3 — Hard: Multi-subsystem cascade with dropout and escalation
+### Task 3 : Hard: Multi-subsystem cascade with dropout and escalation
 - **Max steps**: 20
 - **Anomaly pool**: power-attitude cascade, comms-thermal combined
 - **18% sensor dropout** (sensors return `null`)
