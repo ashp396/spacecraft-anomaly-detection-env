@@ -7,7 +7,7 @@ Task 2  MEDIUM : Multi-sensor root-cause analysis + severity classification
 Task 3  HARD   : Multi-subsystem cascade with sensor dropout + recovery sequencing
 
 Grading philosophy
-All graders are *pure functions* of (state, action) — no LLM-as-judge.
+All graders are *pure functions* of (state, action)  no LLM-as-judge.
 This guarantees determinism across runs and hardware.
 """
 
@@ -197,12 +197,6 @@ def _action_score(state: SpacecraftState, recommendations: List[str]) -> float:
 
 
 def _speed_bonus(state: SpacecraftState, max_steps: int) -> float:
-    """
-    Reward early detection:
-      0.0 if first_correct_detection_step is None
-      1.0 if detected at step 1
-      linear decay to 0.0 at max_steps
-    """
     if state.first_correct_detection_step is None:
         return 0.0
     ratio = 1.0 - (state.first_correct_detection_step / max_steps)
@@ -294,17 +288,16 @@ def compute_reward(
             0.20 * fp
         )
 
-    EPSILON = 0.0001
-    total = float(max(EPSILON, min(1.0 - EPSILON, total)))
+    total = int(round(total))
 
     return RewardBreakdown(
-        detection=round(det, 4),
-        localization=round(loc, 4),
-        severity=round(sev, 4),
-        action=round(act, 4),
-        speed_bonus=round(spd, 4),
-        fp_penalty=round(fp, 4),
-        total=round(total, 4),
+        detection=int(round(det)),
+        localization=int(round(loc)),
+        severity=int(round(sev)),
+        action=int(round(act)),
+        speed_bonus=int(round(spd)),
+        fp_penalty=int(round(fp)),
+        total=total,
     )
 
 
