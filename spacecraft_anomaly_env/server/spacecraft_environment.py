@@ -26,6 +26,7 @@ import numpy as np
 
 from ..models import (
     RecommendationType,
+    RewardBreakdown,
     SpacecraftAction,
     SpacecraftObservation,
     SpacecraftState,
@@ -34,6 +35,7 @@ from ..models import (
 from .tasks import (
     ANOMALY_RECOMMENDATIONS,
     TASK_BY_ID,
+    _SCORE_MIN,
     compute_reward,
     sample_task_anomaly,
 )
@@ -74,23 +76,19 @@ class SpacecraftAnomalyEnvironment:
         """Initialize a new episode and return the initial observation."""
         episode_id = str(uuid.uuid4())
 
-        # Deterministic seed derived from episode_id (for reproducibility)
         rng_seed = seed if seed is not None else (
             int(uuid.UUID(episode_id).int % (2**31))
         )
 
-        # Sample anomaly for this episode
         anomaly_id = sample_task_anomaly(self._task_id, seed=rng_seed)
         anomaly = ANOMALY_BY_ID[anomaly_id]
 
-        # Build telemetry state
         self._tel_state = TelemetryState(
             rng=np.random.default_rng(rng_seed),
             step=0,
             active_anomaly_id=anomaly_id,
         )
 
-        # Apply dropout mask for hard task
         dropout_fraction = self._task.get("dropout_fraction", 0.0)
         if dropout_fraction > 0.0:
             all_sensors = list(SENSOR_SPECS.keys())
@@ -101,7 +99,6 @@ class SpacecraftAnomalyEnvironment:
             ).tolist()
             self._tel_state.dropout_sensors = dropout_sensors
 
-        # Build server-side state
         self._state = SpacecraftState(
             episode_id=episode_id,
             step_count=0,
@@ -110,7 +107,9 @@ class SpacecraftAnomalyEnvironment:
             anomaly_id=anomaly_id,
             anomaly_subsystem=anomaly["subsystem"],
             anomaly_severity=anomaly["severity"].value,
-            correct_recommendation=ANOMALY_RECOMMENDATIONS.get(anomaly_id, RecommendationType.NO_ACTION).value,
+            correct_recommendation=ANOMALY_RECOMMENDATIONS.get(
+                anomaly_id, RecommendationType.NO_ACTION
+            ).value,
             max_steps=self._task["max_steps"],
             dropout_fraction=dropout_fraction,
             flags_raised=[],
@@ -122,15 +121,18 @@ class SpacecraftAnomalyEnvironment:
 
         telemetry = generate_readings(self._tel_state, dropout_fraction)
 
+        # reset() reward is always the minimum valid score — no agent action
+        # has occurred yet so computing a full reward would always return
+        # _SCORE_MIN anyway; use it directly to avoid the function call.
+        reset_reward = RewardBreakdown(total=_SCORE_MIN)
+
         return SpacecraftObservation(
             telemetry=telemetry,
             step_count=0,
             steps_remaining=self._task["max_steps"],
             active_flags=[],
             last_action_result="Episode initialized. Nominal telemetry stream active.",
-            reward=compute_reward(
-                self._state, self._task, [], [], None, False
-            ),
+            reward=reset_reward,
             done=False,
             success=True,
             info={
@@ -155,13 +157,11 @@ class SpacecraftAnomalyEnvironment:
 
         result_msg = self._execute_action(action)
 
-        # Advance telemetry
         telemetry = generate_readings(
             self._tel_state,
             self._state.dropout_fraction,
         )
 
-        # Check termination
         done = (
             steps_remaining <= 0
             or self._state.episode_complete
@@ -169,7 +169,6 @@ class SpacecraftAnomalyEnvironment:
         if done:
             self._state.episode_complete = True
 
-        # Compute shaped reward
         reward = compute_reward(
             self._state,
             self._task,
@@ -206,7 +205,6 @@ class SpacecraftAnomalyEnvironment:
     # ------------------------------------------------------------------
 
     def _execute_action(self, action: SpacecraftAction) -> str:
-        """Dispatch action and return human-readable result string."""
         at = action.action_type
 
         if at == ActionType.QUERY_SUBSYSTEM:
@@ -229,10 +227,7 @@ class SpacecraftAnomalyEnvironment:
         if sub not in SUBSYSTEMS:
             return f"Unknown subsystem '{sub}'. Valid: {list(SUBSYSTEMS.keys())}"
         sensors = SUBSYSTEMS[sub]
-        readings = {
-            s: self._tel_state.ar_state.get(s, 0.0)
-            for s in sensors
-        }
+        readings = {s: self._tel_state.ar_state.get(s, 0.0) for s in sensors}
         return (
             f"Subsystem '{sub}' queried. "
             f"Contains sensors: {sensors}. "
@@ -247,7 +242,6 @@ class SpacecraftAnomalyEnvironment:
         sev = action.severity.value if action.severity else "warning"
         sub = get_subsystem_of(sensor)
 
-        # Check for duplicate flag on same sensor
         existing = [f for f in self._state.flags_raised if f["sensor"] == sensor]
         if existing:
             return f"Sensor '{sensor}' already flagged. Use clear_flag to rescind."
@@ -261,7 +255,6 @@ class SpacecraftAnomalyEnvironment:
         }
         self._state.flags_raised.append(flag_entry)
 
-        # Track first correct detection for speed bonus
         anomaly = ANOMALY_BY_ID.get(self._state.anomaly_id, {})
         if (
             self._state.first_correct_detection_step is None
