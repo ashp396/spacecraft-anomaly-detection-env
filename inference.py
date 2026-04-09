@@ -252,12 +252,12 @@ def run_episode(
             "done":       done,
             "action_type": action.get("action_type", "unknown"),
             "reward_breakdown": {
-                "detection":    round(reward_obj.get("detection",    0.0), 4),
-                "localization": round(reward_obj.get("localization", 0.0), 4),
-                "severity":     round(reward_obj.get("severity",     0.0), 4),
-                "action":       round(reward_obj.get("action",       0.0), 4),
-                "speed_bonus":  round(reward_obj.get("speed_bonus",  0.0), 4),
-                "fp_penalty":   round(reward_obj.get("fp_penalty",   0.0), 4),
+                "detection":    round(reward_obj.get("detection",    0.), 4),
+                "localization": round(reward_obj.get("localization", 0), 4),
+                "severity":     round(reward_obj.get("severity",     0), 4),
+                "action":       round(reward_obj.get("action",       0), 4),
+                "speed_bonus":  round(reward_obj.get("speed_bonus",  0), 4),
+                "fp_penalty":   round(reward_obj.get("fp_penalty",   0), 4),
             }
         }), flush=True)
  
