@@ -84,13 +84,13 @@ class SpacecraftAction(BaseModel):
 
 class RewardBreakdown(BaseModel):
     """Granular reward components (all in [0,1] before weighting)."""
-    detection:     float = Field(0.0, ge=0.0, le=1.0)  # found an anomaly at all?
-    localization:  float = Field(0.0, ge=0.0, le=1.0)  # right subsystem?
-    severity:      float = Field(0.0, ge=0.0, le=1.0)  # correct severity?
-    action:        float = Field(0.0, ge=0.0, le=1.0)  # recovery action correct?
-    speed_bonus:   float = Field(0.0, ge=0.0, le=1.0)  # detected early?
-    fp_penalty:    float = Field(0.0, ge=0.0, le=1.0)  # false-positive cost
-    total:         float = Field(0.0, ge=0.0, le=1.0)  # weighted composite
+    detection:     int = Field(0, ge=0, le=1)  # found an anomaly at all?
+    localization:  int = Field(0, ge=0, le=1)  # right subsystem?
+    severity:      int = Field(0, ge=0, le=1)  # correct severity?
+    action:        int = Field(0, ge=0, le=1)  # recovery action correct?
+    speed_bonus:   int = Field(0, ge=0, le=1)  # detected early?
+    fp_penalty:    int = Field(0, ge=0, le=1)  # false-positive cost
+    total:         int = Field(0, ge=0, le=1)  # weighted composite
 
 
 class SpacecraftObservation(BaseModel):
