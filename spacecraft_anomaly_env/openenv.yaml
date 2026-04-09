@@ -98,7 +98,7 @@ observation_space:
   done:
     type: bool
 
-reward_range: [0, 1]
+reward_range: [0.0, 1.0]
 reward_type: shaped
 reward_description: >
   Dense shaped reward computed every step. Components:
