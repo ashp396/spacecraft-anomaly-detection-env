@@ -94,12 +94,12 @@ Telemetry uses AR-1 autocorrelated noise (ρ=0.8) and a slow random walk for bas
   "last_action_result":  "Anomaly flag raised: sensor='battery_voltage' ...",
   "reward": {
     "detection":    0.0,
-    "localization": 0.5,
-    "severity":     0.3,
+    "localization": 1.0,
+    "severity":     0.0,
     "action":       0.0,
-    "speed_bonus":  0.6,
+    "speed_bonus":  1.0,
     "fp_penalty":   0.0,
-    "total":        0.42
+    "total":        1.0
   },
   "done":    false,
   "success": true,
@@ -150,7 +150,7 @@ R_medium = 0.25·detection + 0.25·localization + 0.15·severity + 0.25·action 
 R_hard   = 0.20·detection + 0.20·localization + 0.15·severity + 0.20·action + 0.10·escalation + 0.05·speed - 0.20·FP
 ```
 
-Each component is in [0, 1]; total is clipped to [0, 1].
+Each component is in [0, 1]; total is clipped strictly to limits [0.01, 0.99] to satisfy the OpenEnv validator.
 
 **Speed bonus**: `1 - (first_correct_detection_step / max_steps)` — rewards detecting the anomaly early.  
 **FP penalty**: `0.1 per false-positive flag`, capped at 0.5 — penalizes flagging normal sensors.
@@ -276,7 +276,7 @@ openenv push --repo-id your-username/spacecraft-anomaly-env
 # 3. Set env var: TASK_ID=task_easy
 ```
 
-The Space will be available at https://huggingface.co/spaces/ashp396/spacecraft-anomaly-detection
+The Space will be available at 'https://huggingface.co/spaces/ashp396/spacecraft-anomaly-detection'
 
 
 ## Anomaly Catalogue
